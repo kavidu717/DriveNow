@@ -23,7 +23,7 @@ import jsonwebtoken from 'jsonwebtoken';
         )
         }
         const otp=generateOTP();
-         await User.create({
+        const user= await User.create({
             firstName:req.body.firstName,
             lastName:req.body.lastName,
             email:req.body.email,
@@ -31,6 +31,17 @@ import jsonwebtoken from 'jsonwebtoken';
             otp,
             otpExpires:Date.now()+10*60*1000
          })
+
+         await sendEmail(
+               email,
+               "Email Verification OTP",
+              `Your OTP is: ${otp}`
+          );
+
+    res.status(201).json({
+      message: "OTP sent to email"
+    })
+
 
     }catch(error){
             res.status(500)

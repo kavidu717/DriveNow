@@ -1,7 +1,7 @@
 import express from 'express';
 import dotenv from 'dotenv';
 import connectDB from './src/config/db.js';
-
+import userRouter from './src/routes/userRoutes.js';
 
 dotenv.config();
 
@@ -12,6 +12,9 @@ app.get('/', (req, res) => {
     res.send('drive now backend is running');
 })
 
+app.use(express.json());
+
+app.use('/api/v1/auth', userRouter);
 
  app.listen(3000, () => {
     console.log('Server is running on port 3000');
