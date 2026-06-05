@@ -45,8 +45,7 @@ const userSchema = new mongoose.Schema({
 
     profileImage: String,
 
-    passwordResetToken: String,
-    passwordResetExpires: Date,
+    
 
     passwordResetToken: String,
     passwordResetExpires: Date
