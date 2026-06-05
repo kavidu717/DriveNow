@@ -21,7 +21,7 @@ export const protect = async (req, res, next) => {
     }
 
     // Verify token
-    const decoded = jwt.verify(
+    const decoded = jsonwebtoken.verify(
       token,
       process.env.JWT_SECRET
     );
@@ -49,7 +49,7 @@ export const protect = async (req, res, next) => {
 
   } catch (error) {
     return res.status(401).json({
-      message: "Invalid token"
+      message:error.message
     });
   }
 };
