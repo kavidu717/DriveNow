@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import User from "../models/userModel.js";
 
 const vehicleSchema = new mongoose.Schema({
        name:{
