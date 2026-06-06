@@ -1,9 +1,9 @@
-import Vehicle from "../models/vehicleModel";
+import Vehicle from "../models/vehicleModel.js";
 
 export const createVehicle = async (req, res) => {
     try{
     
-        const vehicle=await Vehicle.create(...req.body)
+        const vehicle=await Vehicle.create(req.body)
 
         res.status(200)
         .json({

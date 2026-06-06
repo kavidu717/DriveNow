@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import User from "../models/userModel.js";
+
 
 const vehicleSchema = new mongoose.Schema({
        name:{
@@ -29,7 +29,7 @@ const vehicleSchema = new mongoose.Schema({
        },
        image: {
               type: String,
-              required: true
+              
        },
        availability:{
               type: Boolean,
@@ -50,12 +50,8 @@ const vehicleSchema = new mongoose.Schema({
        defaultKm:{
               type: Number,
               default: 50
-       },
-       createdBy: {
-              type: mongoose.Schema.Types.ObjectId,
-              ref: "User",
-              required: true
        }
+       
               
 
 },{timestamps:true})
