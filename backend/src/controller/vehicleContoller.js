@@ -3,7 +3,10 @@ import Vehicle from "../models/vehicleModel.js";
 export const createVehicle = async (req, res) => {
     try{
     
-        const vehicle=await Vehicle.create(req.body)
+       const vehicle = await Vehicle.create({
+        ...req.body,
+        image: req.file?.path,
+       });
 
         res.status(200)
         .json({
@@ -13,6 +16,7 @@ export const createVehicle = async (req, res) => {
 
 
     }catch(error){
+        console.error(error);
         res.status(500)
         .json({
             message:error.message
@@ -77,13 +81,22 @@ export const updateVehicle = async (req, res) => {
 
     if (!vehicle) {
       return res.status(404).json({
+        success: false,
         message: "Vehicle not found"
       });
     }
 
-    const updated = await Vehicle.findByIdAndUpdate(
+    const updateData = {
+      ...req.body
+    };
+
+    if (req.file) {
+      updateData.image = req.file.path;
+    }
+
+    const updatedVehicle = await Vehicle.findByIdAndUpdate(
       req.params.id,
-      req.body,
+      updateData,
       {
         new: true,
         runValidators: true
@@ -92,14 +105,16 @@ export const updateVehicle = async (req, res) => {
 
     res.status(200).json({
       success: true,
-      data: updated
+      data: updatedVehicle
     });
+
   } catch (error) {
     res.status(500).json({
+      success: false,
       message: error.message
     });
   }
-};
+};;
 
 export const deleteVehicle = async (req, res) => {
   try {
