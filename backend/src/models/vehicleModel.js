@@ -35,7 +35,7 @@ const vehicleSchema = new mongoose.Schema({
               type: Boolean,
               default: true
        },
-       isBlocked: {
+       isBlooked: {
               type: Boolean,
               default: false
        },
