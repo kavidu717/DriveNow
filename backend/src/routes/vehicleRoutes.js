@@ -1,5 +1,6 @@
 import express from "express";
-import { createVehicle, getAllVehicles
+import { createVehicle, getAllVehicles,
+    getSingleVehicle
  } from "../controller/vehicleContoller.js";
  import { protect } from "../middleware/protect.js";
  import { adminOnly } from "../middleware/adminOnly.js";
@@ -11,6 +12,7 @@ import { createVehicle, getAllVehicles
 
  router.post("/",protect,adminOnly, createVehicle)
  router.get("/",getAllVehicles)
+  router.get("/:id",getSingleVehicle)
 
 
 
