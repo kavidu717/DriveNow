@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 
 const heroImages = [
   "https://res.cloudinary.com/doujmzgn3/image/upload/v1780847553/joey-banks-YApiWyp0lqo-unsplash_heewfu.jpg",
@@ -48,12 +49,10 @@ export default function HeroSection() {
             
             {/* CTA Buttons */}
             <div className="flex flex-col sm:flex-row gap-4 w-full justify-center px-4">
-              <button className="bg-[#FF8C00] hover:bg-[#e67e00] text-white px-8 py-3 rounded-xl font-bold text-base transition-all transform hover:scale-105 shadow-xl w-full sm:w-auto">
-                Book Your Ride
-              </button>
-              <button className="bg-white/10 backdrop-blur-md hover:bg-white/20 text-white border-2 border-white/40 px-8 py-3 rounded-xl font-bold text-base transition-all w-full sm:w-auto hover:border-white">
+              <Link to="/vehicle" className="bg-[#FF8C00] hover:bg-[#e67e00] text-white px-8 py-3 rounded-xl font-bold text-base transition-all transform hover:scale-105 shadow-xl w-full sm:w-auto">
                 View All Vehicles
-              </button>
+              </Link>
+              
             </div>
           </div>
         </div>
