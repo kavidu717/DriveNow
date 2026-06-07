@@ -3,6 +3,7 @@ import { create } from "zustand";
 const useAuthStore = create((set) => ({
   user: null,
   token: localStorage.getItem("token") || null,
+  isAuthenticated: !!localStorage.getItem("token"),
 
   login: (user, token) => {
     localStorage.setItem("token", token);
@@ -10,6 +11,7 @@ const useAuthStore = create((set) => ({
     set({
       user,
       token,
+      isAuthenticated: true,
     });
   },
 
@@ -19,10 +21,13 @@ const useAuthStore = create((set) => ({
     set({
       user: null,
       token: null,
+      isAuthenticated: false,
     });
   },
 
-  setUser: (user) => set({ user }),
+  setUser: (user) => {
+    set({ user });
+  },
 }));
 
 export default useAuthStore;
