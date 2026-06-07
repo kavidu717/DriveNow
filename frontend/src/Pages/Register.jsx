@@ -1,83 +1,93 @@
-import { useState } from "react"
-import API from "../api/axios"
-import { useNavigate } from "react-router-dom"
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import useAuthStore from "../Store/authStore.js";
 
+export default function RegisterPage() {
+  const navigate = useNavigate();
+  const register = useAuthStore((state) => state.register);
 
-export default function Register() {
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
 
-  const [firstName, setFirstName]= useState("")
-  const [lastName, setLastName]= useState("")
-  const [email, setEmail]= useState("")
-  const [password, setPassword]= useState("")
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
-  const navigate=useNavigate()
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError("");
+    setLoading(true);
 
-   const handleRegister=async(e)=>{
-       e.preventDefault()
-       console.log(firstName,lastName,email,password);
+    try {
+      // call API via zustand
+      await register(firstName, lastName, email, password);
 
-       try{
+      // save email (important for OTP page refresh safety)
+      localStorage.setItem("otpEmail", email);
 
-        const {data}= await API.post("/auth/register",{
-            firstName,
-            lastName,
-            email,
-            password
-        })
-        alert(data.message)
-        navigate("/verify-otp")
+      alert("OTP sent to your email!");
 
-       }catch(error){
-        alert(error.response?.data?.message || "registration failed")
-       }
+      // go to OTP page
+      navigate("/verify-otp");
 
-   }
+    } catch (err) {
+      setError(
+        err?.response?.data?.message || "Registration failed"
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
 
-    return (
-         <>
-         <form action="" onSubmit={handleRegister}>
-            
-              <div>
-            <div>
-                <label htmlFor="">firstname</label>
-                <input type="text"
-                placeholder="firstname"
-                value={firstName}
-                onChange={(e)=>{setFirstName(e.target.value)}} />
-            </div>
+  return (
+    <div >
+      <h2>Register</h2>
 
-            <div>
-                <label htmlFor="">lastname</label>
-                <input type="text"
-                 placeholder="lastname"
-                value={lastName}
-                onChange={(e)=>{setLastName(e.target.value)}} />
-            </div>
+      <form onSubmit={handleSubmit} >
+        <input
+          type="text"
+          placeholder="First Name"
+          value={firstName}
+          onChange={(e) => setFirstName(e.target.value)}
+          
+        />
 
-            <div>
-                <label htmlFor="">email</label>
-                <input type="email" 
-                 placeholder="email"
-                value={email}
-                onChange={(e)=>{setEmail(e.target.value)}}/>
-            </div>
+        <input
+          type="text"
+          placeholder="Last Name"
+          value={lastName}
+          onChange={(e) => setLastName(e.target.value)}
+       
+        />
 
-            <div>
-                <label htmlFor="">password</label>
-                <input type="password"
-                 placeholder="password"
-                value={password}
-                onChange={(e)=>{setPassword(e.target.value)}} />
-            </div>
-
-            <div>
-                <button type="submit">Register</button>
-            </div>
-         </div>
-
-
-         </form>
+        <input
+          type="email"
+          placeholder="Email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
         
-         </>
-    )
+        />
+
+        <input
+          type="password"
+          placeholder="Password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          
+        />
+
+        {error && <p style={{ color: "red" }}>{error}</p>}
+
+        <button
+          type="submit"
+          disabled={loading}
+          
+        >
+          {loading ? "Registering..." : "Register"}
+        </button>
+      </form>
+    </div>
+  );
 }
+
