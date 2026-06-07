@@ -90,6 +90,7 @@ import jsonwebtoken from 'jsonwebtoken';
   }
 };
 
+
 export const loginUser=async(req,res)=>{
     try{
         const {email,password}=req.body
