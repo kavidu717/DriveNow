@@ -3,10 +3,14 @@ import dotenv from 'dotenv';
 import connectDB from './src/config/db.js';
 import userRouter from './src/routes/userRoutes.js';
 import vehicleRouter from './src/routes/vehicleRoutes.js';
+import cors from 'cors';
 
 dotenv.config();
 
 const app = express();
+
+app.use(cors());
+
 connectDB();
 
 app.get('/', (req, res) => {
