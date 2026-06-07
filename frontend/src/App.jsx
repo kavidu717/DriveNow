@@ -1,6 +1,7 @@
 import { Routes } from 'react-router-dom'
 import { Route } from 'react-router-dom'
 import UserLayout from './Layout/UserLayout'
+import Home from './Pages/Home'
 
 function App() {
  
@@ -9,6 +10,7 @@ function App() {
     <>
      <Routes>
       <Route path='/' element={<UserLayout />}>
+       <Route index element={<Home />} />
 
       </Route>
 
