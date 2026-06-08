@@ -1,14 +1,30 @@
 import { create } from "zustand";
 import API from "../api/axios.js";
 
+let user = null;
+
+try {
+  const storedUser = localStorage.getItem("user");
+
+  if (storedUser && storedUser !== "undefined") {
+    user = JSON.parse(storedUser);
+  }
+} catch (error) {
+  user = null;
+}
+
 const useAuthStore = create((set) => ({
 
-  user: JSON.parse(localStorage.getItem("user")) || null,
+  user,
   token: localStorage.getItem("token") || null,
   isAuthenticated: !!localStorage.getItem("token"),
 
+  // register...
+  // verifyOtp...
+  // login...
+  // logout...
 
-  register: async (firstName, lastName, email, password) => {
+   register: async (firstName, lastName, email, password) => {
     try {
       const { data } = await API.post(
         "/auth/register",
@@ -95,5 +111,10 @@ const useAuthStore = create((set) => ({
     });
   },
 }));
+
+
+
+
+ 
 
 export default useAuthStore;
