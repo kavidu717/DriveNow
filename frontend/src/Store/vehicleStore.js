@@ -1,10 +1,37 @@
 import { create } from "zustand";
+import API from "../api/axios.js";
 
-const useVehicleStore = create((set) => ({
+const useVehicleStore = create((set, get) => ({
   vehicles: [],
+  loading: false,
 
-  setVehicles: (vehicles) => {
-    set({ vehicles });
+  filters: {
+    type: "",
+    brand: "",
+  },
+
+  setFilters: (filters) => {
+    set({ filters });
+  },
+
+  fetchVehicles: async () => {
+    set({ loading: true });
+
+    try {
+      const { filters } = get();
+
+      const { data } = await API.get("/vehicles", {
+        params: filters,
+      });
+
+      set({
+        vehicles: data.data,
+        loading: false,
+      });
+    } catch (error) {
+      console.log(error);
+      set({ loading: false });
+    }
   },
 }));
 
