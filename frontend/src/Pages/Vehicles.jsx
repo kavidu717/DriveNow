@@ -8,12 +8,21 @@ export default function Vehicles() {
   const loading = useVehicleStore((state) => state.loading);
   const fetchVehicles = useVehicleStore((state) => state.fetchVehicles);
 
-  // State to manage the mobile filter drawer
   const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false);
 
   useEffect(() => {
     fetchVehicles();
   }, []);
+
+  // Prevent background scrolling when mobile menu is open
+  useEffect(() => {
+    if (isMobileFilterOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+    return () => { document.body.style.overflow = 'unset'; };
+  }, [isMobileFilterOpen]);
 
   return (
     <div className="min-h-screen w-full flex bg-gray-50 relative">
@@ -29,40 +38,37 @@ export default function Vehicles() {
         </div>
       </aside>
 
-      {/* --- MOBILE FILTER DRAWER --- */}
-      {isMobileFilterOpen && (
-        <div className="fixed inset-0 z-[60] flex md:hidden">
-          {/* Dark Overlay Background */}
-          <div 
-            className="fixed inset-0 bg-black/60 backdrop-blur-sm transition-opacity"
-            onClick={() => setIsMobileFilterOpen(false)}
-          ></div>
-          
-          {/* Sliding Panel */}
-          <div className="relative flex-1 flex flex-col max-w-xs w-full bg-white shadow-2xl h-full animate-slide-in-right">
-            
-            {/* Drawer Header */}
-            <div className="flex items-center justify-between p-6 border-b border-gray-100">
-              <div className="flex items-center gap-2">
-                <FiSliders className="text-[#FF8C00] text-lg" />
-                <h3 className="font-bold text-gray-900">Filters</h3>
-              </div>
-              <button 
-                onClick={() => setIsMobileFilterOpen(false)}
-                className="p-2 text-gray-400 hover:text-gray-900 hover:bg-gray-100 rounded-full transition-all"
-              >
-                <FiX className="text-xl" />
-              </button>
-            </div>
-            
-            {/* Drawer Content */}
-            <div className="p-6 overflow-y-auto">
-              <FilterBar />
-            </div>
+      {/* --- SLIDING MOBILE DRAWER --- */}
+      <div 
+        className={`fixed inset-0 bg-black/60 backdrop-blur-sm z-[60] transition-opacity duration-300 md:hidden ${
+          isMobileFilterOpen ? "opacity-100 visible" : "opacity-0 invisible"
+        }`}
+        onClick={() => setIsMobileFilterOpen(false)}
+      ></div>
+      
+      <div 
+        className={`fixed top-0 right-0 h-full w-[85%] max-w-sm bg-white z-[70] shadow-2xl transform transition-transform duration-300 ease-in-out md:hidden flex flex-col ${
+          isMobileFilterOpen ? "translate-x-0" : "translate-x-full"
+        }`}
+      >
+        <div className="flex items-center justify-between p-6 border-b border-gray-100">
+          <div className="flex items-center gap-2">
+            <FiSliders className="text-[#FF8C00] text-lg" />
+            <h3 className="font-bold text-gray-900">Filters</h3>
           </div>
+          <button 
+            onClick={() => setIsMobileFilterOpen(false)}
+            className="p-2 text-gray-500 hover:text-gray-900 bg-gray-50 hover:bg-gray-100 rounded-full transition-all"
+          >
+            <FiX className="text-xl" />
+          </button>
         </div>
-      )}
-      {/* --------------------------- */}
+        
+        <div className="p-6 overflow-y-auto flex-1">
+          <FilterBar />
+        </div>
+      </div>
+      {/* ------------------------------------- */}
 
       {/* Right Content Area: Vehicle Grid */}
       <main className="flex-1 p-4 sm:p-6 md:p-8">
@@ -78,27 +84,26 @@ export default function Vehicles() {
             </p>
           </div>
 
-          {/* Mobile Filter Trigger Button (Hidden on Desktop) */}
           <button 
             onClick={() => setIsMobileFilterOpen(true)}
-            className="md:hidden flex items-center gap-2 bg-white border border-gray-200 text-gray-700 px-4 py-2 rounded-xl font-bold text-sm shadow-sm hover:bg-gray-50 active:scale-95 transition-all w-full justify-center sm:w-auto"
+            className="md:hidden flex items-center gap-2 bg-white border border-gray-200 text-gray-700 px-4 py-2.5 rounded-xl font-bold text-sm shadow-sm hover:bg-gray-50 active:scale-95 transition-all w-full justify-center sm:w-auto"
           >
             <FiSliders className="text-[#FF8C00]" />
             Filters
           </button>
         </div>
 
-        {/* Loading State Skeleton Layout */}
+        {/* Loading State */}
         {loading ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
-            {[1, 2, 3, 4, 5, 6].map((i) => (
-              <div key={i} className="bg-white border border-gray-100 rounded-2xl h-[380px] animate-pulse p-4 flex flex-col justify-between">
-                <div className="bg-gray-200 h-44 rounded-xl w-full"></div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+            {[1, 2, 3, 4].map((i) => (
+              <div key={i} className="bg-white border border-gray-100 rounded-2xl animate-pulse p-4 flex flex-col justify-between">
+                <div className="bg-gray-200 aspect-video rounded-xl w-full"></div>
                 <div className="space-y-3 mt-4 flex-1">
                   <div className="h-4 bg-gray-200 rounded w-2/3"></div>
                   <div className="h-3 bg-gray-200 rounded w-1/2"></div>
                 </div>
-                <div className="h-10 bg-gray-200 rounded-lg w-full mt-auto"></div>
+                <div className="h-10 bg-gray-200 rounded-lg w-full mt-4"></div>
               </div>
             ))}
           </div>
@@ -110,30 +115,30 @@ export default function Vehicles() {
                 key={v._id}
                 className="group bg-white border border-gray-100 rounded-2xl shadow-sm hover:shadow-xl hover:border-orange-100 transition-all duration-300 overflow-hidden flex flex-col"
               >
-                {/* Image Section */}
-                <div className="relative bg-gray-100 h-44 overflow-hidden">
+                {/* Fixed Image Container via Aspect Ratio */}
+                <div className="relative bg-gray-100 w-full aspect-[16/10] sm:aspect-video overflow-hidden">
                   <img
                     src={v.image}
                     alt={v.name}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                    className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500"
                   />
                   
                   {/* Status Badge */}
-                  <div className="absolute top-3 left-3">
+                  <div className="absolute top-3 left-3 z-10">
                     {v.availability ? (
-                      <span className="flex items-center gap-1.5 bg-green-50 text-green-700 px-3 py-1 rounded-full text-xs font-bold shadow-sm border border-green-100">
+                      <span className="flex items-center gap-1.5 bg-green-50/90 backdrop-blur-sm text-green-700 px-2.5 py-1 rounded-full text-[11px] font-bold shadow-sm border border-green-100">
                         <FiCheckCircle /> Available
                       </span>
                     ) : (
-                      <span className="flex items-center gap-1.5 bg-red-50 text-red-700 px-3 py-1 rounded-full text-xs font-bold shadow-sm border border-red-100">
+                      <span className="flex items-center gap-1.5 bg-red-50/90 backdrop-blur-sm text-red-700 px-2.5 py-1 rounded-full text-[11px] font-bold shadow-sm border border-red-100">
                         <FiXCircle /> Booked
                       </span>
                     )}
                   </div>
 
                   {/* Favorite Button Overlay */}
-                  <button className="absolute top-3 right-3 bg-white/80 backdrop-blur-sm p-2 rounded-full text-gray-600 hover:text-red-500 hover:bg-white shadow-sm transition-all">
-                    <FiHeart className="text-sm" />
+                  <button className="absolute top-3 right-3 z-10 bg-white/90 backdrop-blur-sm p-2 rounded-full text-gray-600 hover:text-red-500 hover:bg-white shadow-sm transition-all">
+                    <FiHeart className="text-xs" />
                   </button>
                 </div>
 
@@ -146,29 +151,30 @@ export default function Vehicles() {
                       <span>{v.type}</span>
                     </div>
                     
-                    <h3 className="font-bold text-lg text-gray-900 group-hover:text-[#FF8C00] transition-colors truncate">
+                    <h3 className="font-bold text-base sm:text-lg text-gray-900 group-hover:text-[#FF8C00] transition-colors truncate">
                       {v.name}
                     </h3>
                     
                     <p className="text-gray-400 text-xs mt-0.5">Model Year: {v.model || "N/A"}</p>
                   </div>
 
-                  {/* Pricing / Call to Action Action Row */}
-                  <div className="mt-6 pt-4 border-t border-gray-50 flex items-center justify-between">
-                    <div>
-                      <span className="text-xs text-gray-400 font-medium block">Daily Rate</span>
-                      <span className="text-xl font-black text-gray-900">Rs{v.pricePerKm}<span className="text-xs font-normal text-gray-500"></span></span>
+                  <div className="mt-4 pt-4 border-t border-gray-50 flex items-center justify-between gap-2">
+                    <div className="min-w-0">
+                      <span className="text-[10px] text-gray-400 font-bold uppercase tracking-wider block">Rate</span>
+                      <span className="text-base sm:text-lg font-black text-gray-900 truncate block">
+                        Rs {v.pricePerKm}
+                        <span className="text-xs font-normal text-gray-500"> /km</span>
+                      </span>
                     </div>
 
                     <button 
                       disabled={!v.availability}
-                      className="bg-[#FF8C00] hover:bg-[#e67e00] text-white px-4 py-2.5 rounded-xl font-bold text-xs shadow-md shadow-[#FF8C00]/10 transition-all active:scale-95 disabled:opacity-40 disabled:pointer-events-none"
+                      className="bg-[#FF8C00] hover:bg-[#e67e00] text-white px-3 sm:px-4 py-2 rounded-xl font-bold text-xs shadow-md shadow-[#FF8C00]/10 transition-all active:scale-95 disabled:opacity-40 disabled:pointer-events-none whitespace-nowrap"
                     >
                       Rent Now
                     </button>
                   </div>
                 </div>
-
               </div>
             ))}
           </div>
