@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import FilterBar from "../Components/FilterBar";
 import useVehicleStore from "../Store/vehicleStore";
 import { FiSliders, FiHeart, FiCheckCircle, FiXCircle, FiX } from "react-icons/fi"; 
+import { Link } from "react-router-dom";
 
 export default function Vehicles() {
   const vehicles = useVehicleStore((state) => state.vehicles);
@@ -167,12 +168,12 @@ export default function Vehicles() {
                       </span>
                     </div>
 
-                    <button 
+                    <Link to={`/vehicle/${v._id}`} 
                       disabled={!v.availability}
                       className="bg-[#FF8C00] hover:bg-[#e67e00] text-white px-3 sm:px-4 py-2 rounded-xl font-bold text-xs shadow-md shadow-[#FF8C00]/10 transition-all active:scale-95 disabled:opacity-40 disabled:pointer-events-none whitespace-nowrap"
                     >
                       Rent Now
-                    </button>
+                    </Link>
                   </div>
                 </div>
               </div>

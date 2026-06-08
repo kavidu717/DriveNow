@@ -33,6 +33,27 @@ const useVehicleStore = create((set, get) => ({
       set({ loading: false });
     }
   },
+
+   fetchVehicleById: async (id) => {
+    set({ loading: true });
+
+    try {
+      const { data } = await API.get(`/vehicles/${id}`);
+
+      set({
+        vehicle: data.data,
+        loading: false,
+      });
+    } catch (error) {
+      console.log(error);
+      set({ loading: false });
+    }
+  },
+
+  clearVehicle: () => {
+    set({ vehicle: null });
+  },
+
 }));
 
 export default useVehicleStore;
