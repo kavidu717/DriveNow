@@ -11,10 +11,22 @@ import {
   FiInfo, 
   FiMap 
 } from "react-icons/fi";
+import useAuthStore from "../Store/authStore.js";
+
+
+
 
 export default function VehicleDetails() {
   const { id } = useParams();
   const navigate = useNavigate();
+
+  const isAuthenticated = useAuthStore(
+  (state) => state.isAuthenticated
+);
+
+const user = useAuthStore(
+  (state) => state.user
+);
 
   const vehicle = useVehicleStore((state) => state.vehicle);
   const loading = useVehicleStore((state) => state.loading);
@@ -40,25 +52,46 @@ export default function VehicleDetails() {
     }
   }, [vehicle]);
 
-  const handleBooking = () => {
-    if (!startDate) {
-      toast.error("Please select a Pick-up date.");
-      return;
-    }
-    if (!estimatedKm || Number(estimatedKm) <= 0) {
-      toast.error("Please enter a valid estimated distance in km.");
-      return;
-    }
+ const handleBooking = () => {
+  // User must login first
+  if (!isAuthenticated) {
+    toast.error("Please login to continue booking");
+    navigate("/login");
+    return;
+  }
 
-    setIsBooking(true);
-    
-    // Simulate API booking request
-    setTimeout(() => {
-      setIsBooking(false);
-      toast.success("Vehicle booked successfully!");
-      setTimeout(() => navigate("/"), 1500);
-    }, 1500);
+  if (!startDate) {
+    toast.error("Please select a Pick-up date.");
+    return;
+  }
+
+  if (!estimatedKm || Number(estimatedKm) <= 0) {
+    toast.error("Please enter a valid estimated distance.");
+    return;
+  }
+
+  const bookingData = {
+    vehicleId: vehicle._id,
+    userId: user.id,
+    vehicleName: vehicle.name,
+    vehicleImage: vehicle.image,
+    startDate,
+    estimatedKm,
+    pricePerKm: vehicle.pricePerKm,
+    totalAmount: estimatedTotal,
   };
+
+  localStorage.setItem(
+    "pendingBooking",
+    JSON.stringify(bookingData)
+  );
+
+  toast.success("Redirecting to checkout...");
+
+  setTimeout(() => {
+    navigate("/checkout");
+  }, 1000);
+};
 
   // Premium Skeleton Loader
   if (loading) {

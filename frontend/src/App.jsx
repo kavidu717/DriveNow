@@ -7,6 +7,7 @@ import Login from './Pages/Login'
 import Register from './Pages/Register'
 import Otp from './Pages/Otp'
 import VehicleDetails from './Pages/VehicleDetails'
+import Checkout from './Pages/Checkout'
 
 function App() {
  
@@ -21,6 +22,9 @@ function App() {
       <Route path='/register' element={<Register />} />
       <Route path='/verify-otp' element={<Otp />} />
       <Route path='/vehicle/:id' element={<VehicleDetails />} />
+      import Checkout from "./Pages/Checkout";
+
+<Route path="/checkout" element={<Checkout />} />
 
 
       </Route>
