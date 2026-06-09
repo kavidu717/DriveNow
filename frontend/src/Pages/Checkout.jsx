@@ -26,7 +26,7 @@ export default function Checkout() {
     }, 400);
   }, [navigate]);
 
- const handleProceedToPayment = async () => {
+const handleProceedToPayment = async () => {
   try {
     setIsProcessing(true);
 
@@ -35,14 +35,22 @@ export default function Checkout() {
     const createdBooking = await createBooking({
       vehicle: booking.vehicleId,
       startDate: booking.startDate,
-      estimatedKm: 50,
     });
+
+    // ✅ THIS IS NOW SAFE
+    const bookingId = createdBooking._id;
+
+    if (!bookingId) {
+      throw new Error("Booking ID not found");
+    }
 
     toast.success("Booking created!");
 
-    navigate(`/payment/${createdBooking.booking._id}`);
+    navigate(`/payment/${bookingId}`);
+
   } catch (err) {
-    toast.error(err.message);
+    toast.error(err);
+    console.log(err);
   } finally {
     setIsProcessing(false);
   }

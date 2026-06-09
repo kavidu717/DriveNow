@@ -8,6 +8,8 @@ import Register from './Pages/Register'
 import Otp from './Pages/Otp'
 import VehicleDetails from './Pages/VehicleDetails'
 import Checkout from './Pages/Checkout'
+import Payment from './Pages/Payment'
+
 
 function App() {
  
@@ -25,6 +27,10 @@ function App() {
       import Checkout from "./Pages/Checkout";
 
 <Route path="/checkout" element={<Checkout />} />
+
+<Route path="/payment/:id" element={<Payment />} />
+
+ 
 
 
       </Route>

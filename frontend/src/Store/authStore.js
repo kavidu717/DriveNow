@@ -10,6 +10,7 @@ try {
     user = JSON.parse(storedUser);
   }
 } catch (error) {
+  console.log(error)
   user = null;
 }
 
