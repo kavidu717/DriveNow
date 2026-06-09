@@ -1,4 +1,6 @@
 import mongoose  from "mongoose";
+import User from "../models/userModel.js"
+import Vehicle from "./vehicleModel.js";
 
 const bookingSchema=new.mongoose({
     user:{
