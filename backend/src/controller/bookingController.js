@@ -38,3 +38,42 @@ export const createBooking = async (req, res) => {
     });
   }
 };
+
+export const getAllBookings = async (req, res) => {
+  try {
+    const bookings = await Booking.find()
+      .populate("user", "firstName lastName email")
+      .populate("vehicle")
+      .sort("-createdAt");
+
+    res.status(200).json({
+      success: true,
+      count: bookings.length,
+      bookings,
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: error.message,
+    });
+  }
+};
+
+export const getMyBookings = async (req, res) => {
+  try {
+    const bookings = await Booking.find({
+      user: req.user.id,
+    })
+      .populate("vehicle")
+      .sort("-createdAt");
+
+    res.status(200).json({
+      success: true,
+      count: bookings.length,
+      bookings,
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: error.message,
+    });
+  }
+};
