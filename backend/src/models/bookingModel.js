@@ -2,7 +2,7 @@ import mongoose  from "mongoose";
 import User from "../models/userModel.js"
 import Vehicle from "./vehicleModel.js";
 
-const bookingSchema=new.mongoose({
+const bookingSchema=new mongoose.Schema({
     user:{
         type:mongoose.Schema.Types.ObjectId,
         ref:"User",
