@@ -3,7 +3,9 @@ import paypalClient from "../utils/paypal.js";
 import Booking from "../models/bookingModel.js";
 
 
-
+// ===============================
+// CREATE PAYPAL ORDER
+// ===============================
 export const createPayPalOrder = async (req, res) => {
   try {
     const { bookingId } = req.body;
@@ -12,6 +14,7 @@ export const createPayPalOrder = async (req, res) => {
 
     if (!booking) {
       return res.status(404).json({
+        success: false,
         message: "Booking not found",
       });
     }
@@ -24,7 +27,7 @@ export const createPayPalOrder = async (req, res) => {
         {
           amount: {
             currency_code: "USD",
-            value: booking.totalAmount.toString(),
+            value: booking.totalAmount.toFixed(2),
           },
         },
       ],
@@ -38,34 +41,47 @@ export const createPayPalOrder = async (req, res) => {
     });
   } catch (error) {
     res.status(500).json({
+      success: false,
       message: error.message,
     });
   }
 };
 
 
+// ===============================
+// CAPTURE PAYMENT + CONFIRM BOOKING
+// ===============================
 export const capturePayPalPayment = async (req, res) => {
   try {
     const { orderID, bookingId } = req.body;
 
-    const request =
-      new paypal.orders.OrdersCaptureRequest(orderID);
-
-    request.requestBody({});
-
-    const capture = await paypalClient.execute(request);
-
+    // 1. Find booking
     const booking = await Booking.findById(bookingId);
 
     if (!booking) {
       return res.status(404).json({
+        success: false,
         message: "Booking not found",
       });
     }
 
-    // Update booking after successful payment
+    // 2. Capture PayPal payment
+    const request = new paypal.orders.OrdersCaptureRequest(orderID);
+    request.requestBody({});
+
+    const capture = await paypalClient.execute(request);
+
+    // 3. Validate payment success
+    if (capture.result.status !== "COMPLETED") {
+      return res.status(400).json({
+        success: false,
+        message: "Payment not completed",
+      });
+    }
+
+    // 4. Update booking
+    booking.status = "confirmed";
     booking.paymentStatus = "paid";
-    booking.bookingStatus = "confirmed";
     booking.transactionId = orderID;
 
     await booking.save();
@@ -74,10 +90,11 @@ export const capturePayPalPayment = async (req, res) => {
       success: true,
       message: "Payment successful & booking confirmed",
       booking,
-      capture,
     });
+
   } catch (error) {
     res.status(500).json({
+      success: false,
       message: error.message,
     });
   }
