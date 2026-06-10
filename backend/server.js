@@ -4,8 +4,7 @@ import connectDB from './src/config/db.js';
 import userRouter from './src/routes/userRoutes.js';
 import vehicleRouter from './src/routes/vehicleRoutes.js';
 import cors from 'cors';
-import bookingRouter from "./src/routes/bookingRoutes.js"
-import paymentRouter from "./src/routes/paymentRoutes.js"
+
 
 dotenv.config();
 
@@ -25,9 +24,7 @@ app.use('/api/v1/auth', userRouter);
 
 app.use('/api/v1/vehicles',vehicleRouter);
 
-app.use('/api/v1/bookings',bookingRouter);
 
-app.use('/api/v1/payment',paymentRouter);
 
 
 
