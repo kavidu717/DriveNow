@@ -1,5 +1,5 @@
 import checkoutNodeJssdk from "@paypal/checkout-server-sdk";
-import { client } from "../config/paypal.js";
+import { client } from "../utils/payPal.js";
 import Booking from "../models/bookingModel.js";
 
 // CREATE ORDER
