@@ -1,63 +1,47 @@
-import mongoose  from "mongoose";
-import User from "../models/userModel.js"
-import Vehicle from "./vehicleModel.js";
+import mongoose from "mongoose";
 
-const bookingSchema=new mongoose.Schema({
-    user:{
-        type:mongoose.Schema.Types.ObjectId,
-        ref:"User",
-        required:true
+const bookingSchema = new mongoose.Schema(
+  {
+    userId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: true
     },
-    vehicle:{
-        type:mongoose.Schema.Types.ObjectId,
-        ref:"Vehicle",
-        required:true
-    },
-    startDate:{
-        type:Date,
-        required:true
-    },
-    
 
-    pricePerKm: {
+    vehicleId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Vehicle",
+      required: true
+    },
+
+    startDate: {
+      type: Date,
+      required: true
+    },
+
+    estimatedKm: {
       type: Number,
-      required: true,
+      default: 50
     },
 
     totalAmount: {
       type: Number,
-      required: true,
+      required: true
     },
 
     status: {
       type: String,
-      enum: ["pending", "confirmed", "cancel"],
-      default: "pending",
-    },
-
-    bookingStatus: {
-      type: String,
-      enum: ["pending", "confirmed", "cancelled"],
-      default: "pending",
+      enum: ["PENDING", "CONFIRMED", "CANCELLED"],
+      default: "PENDING"
     },
 
     paymentStatus: {
       type: String,
-      enum: ["unpaid","paid"],
-      default: "unpaid",
-    },
+      enum: ["UNPAID", "PAID"],
+      default: "UNPAID"
+    }
+  },
+  { timestamps: true }
+);
 
-    transactionId: {
-      type: String,
-     
-    },
-
-
-
-},{
-    timestamps:true,
-})
-
-const Booking=mongoose.model("Booking",bookingSchema);
-
-export default Booking;
+export default mongoose.model("Booking", bookingSchema);
