@@ -1,13 +1,11 @@
 import checkoutNodeJssdk from "@paypal/checkout-server-sdk";
 
-// ALWAYS SANDBOX (no live mode)
+// Sandbox environment only
 const environment = new checkoutNodeJssdk.core.SandboxEnvironment(
   process.env.PAYPAL_CLIENT_ID,
   process.env.PAYPAL_SECRET
 );
 
-const client = new checkoutNodeJssdk.core.PayPalHttpClient(
-  environment
-);
+const paypalClient = new checkoutNodeJssdk.core.PayPalHttpClient(environment);
 
-export default client;
+export default paypalClient;
