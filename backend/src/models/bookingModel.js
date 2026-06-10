@@ -17,10 +17,7 @@ const bookingSchema=new mongoose.Schema({
         type:Date,
         required:true
     },
-     estimatedKm: {
-      type: Number,
-      default: 50,
-    },
+    
 
     pricePerKm: {
       type: Number,
@@ -32,9 +29,9 @@ const bookingSchema=new mongoose.Schema({
       required: true,
     },
 
-    paymentStatus: {
+    status: {
       type: String,
-      enum: ["pending", "paid", "failed"],
+      enum: ["pending", "confirmed", "cancel"],
       default: "pending",
     },
 
@@ -44,15 +41,15 @@ const bookingSchema=new mongoose.Schema({
       default: "pending",
     },
 
-    paymentMethod: {
+    paymentStatus: {
       type: String,
-      enum: ["card", "paypal", "cash"],
-      default: "card",
+      enum: ["unpaid","paid"],
+      default: "unpaid",
     },
 
     transactionId: {
       type: String,
-      default: null,
+     
     },
 
 
