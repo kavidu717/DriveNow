@@ -3,6 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import useVehicleStore from "../Store/vehicleStore.js";
 import { FiCheckCircle, FiXCircle, FiCalendar, FiMap } from "react-icons/fi";
 import toast, { Toaster } from "react-hot-toast";
+import useBookingStore from "../Store/bookingStore.js";
 
 export default function VehicleDetails() {
   const { id } = useParams();
@@ -10,6 +11,8 @@ export default function VehicleDetails() {
 
   const vehicles = useVehicleStore((state) => state.vehicles);
   const fetchVehicles = useVehicleStore((state) => state.fetchVehicles);
+
+  const setBooking = useBookingStore((state) => state.setBooking);
 
   // State for booking details
   const [startDate, setStartDate] = useState("");
@@ -33,21 +36,21 @@ export default function VehicleDetails() {
       return;
     }
 
-    // Checkout පිටුවේදී total එක calculate කරගැනීම සඳහා data ටික save කරනවා
     const bookingData = {
-      vehicleId: vehicle._id,
-      vehicleName: vehicle.name,
-      vehicleImage: vehicle.image,
-      pricePerKm: vehicle.pricePerKm,
-      startDate,
-      estimatedKm,
-      totalAmount: vehicle.pricePerKm * estimatedKm, 
-    };
+    userId: "TEMP_USER_ID",
+    vehicleId: vehicle._id,
+    vehicleName: vehicle.name,
+    vehicleImage: vehicle.image,
+    pricePerKm: vehicle.pricePerKm,
+    startDate,
+    estimatedKm,
+    totalAmount: vehicle.pricePerKm * estimatedKm,
+  };
 
-    localStorage.setItem("pendingBooking", JSON.stringify(bookingData));
+  setBooking(bookingData);
+
+  navigate("/checkout");
     
-    // Checkout පිටුවට මාරු වෙනවා
-    navigate("/checkout");
   };
 
   // වාහනයේ විස්තර ලෝඩ් වෙනකම් Spinner එක පෙන්වනවා

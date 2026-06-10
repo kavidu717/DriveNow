@@ -25,7 +25,7 @@ app.use('/api/v1/auth', userRouter);
 
 app.use('/api/v1/vehicles',vehicleRouter);
 
-app.use("/api/bookings", bookingRouter);
+app.use("/api/v1/bookings", bookingRouter);
 
 
 
