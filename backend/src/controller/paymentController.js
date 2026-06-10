@@ -6,6 +6,7 @@ import Booking from "../models/bookingModel.js";
 export const createPayPalOrder = async (req, res) => {
   try {
     const { bookingId } = req.body;
+    console.log("CURRENT BACKEND CLIENT ID IN USE:", process.env.PAYPAL_CLIENT_ID);
 
     const booking = await Booking.findById(bookingId);
 
