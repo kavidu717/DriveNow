@@ -1,84 +1,37 @@
 import Booking from "../models/bookingModel.js";
-import Vehicle from "../models/vehicleModel.js";
 
-// CREATE BOOKING
-export const createBooking = async (req, res) => {
+// CREATE PENDING BOOKING
+export const createPendingBooking = async (req, res) => {
   try {
     const {
-      vehicle,
+      userId,
+      vehicleId,
       startDate,
       estimatedKm,
-      paymentId,
-      paymentStatus,
+      totalAmount,
     } = req.body;
 
-    const foundVehicle = await Vehicle.findById(vehicle);
-
-    if (!foundVehicle) {
-      return res.status(404).json({
-        message: "Vehicle not found",
-      });
-    }
-
-    const totalAmount =
-      foundVehicle.pricePerKm * estimatedKm;
-
-    const booking = await Booking.create({
-      user: req.user.id,
-      vehicle,
+    const booking = new Booking({
+      userId,
+      vehicleId,
       startDate,
       estimatedKm,
-      pricePerKm: foundVehicle.pricePerKm,
       totalAmount,
-      paymentId,
-      paymentStatus,
+      status: "pending",
+      paymentStatus: "unpaid",
     });
+
+    await booking.save();
 
     res.status(201).json({
       success: true,
-      booking,
+      message: "Booking created (pending payment)",
+      bookingId: booking._id,
+      totalAmount: booking.totalAmount,
     });
   } catch (error) {
     res.status(500).json({
-      message: error.message,
-    });
-  }
-};
-
-export const getAllBookings = async (req, res) => {
-  try {
-    const bookings = await Booking.find()
-      .populate("user", "firstName lastName email")
-      .populate("vehicle")
-      .sort("-createdAt");
-
-    res.status(200).json({
-      success: true,
-      count: bookings.length,
-      bookings,
-    });
-  } catch (error) {
-    res.status(500).json({
-      message: error.message,
-    });
-  }
-};
-
-export const getMyBookings = async (req, res) => {
-  try {
-    const bookings = await Booking.find({
-      user: req.user.id,
-    })
-      .populate("vehicle")
-      .sort("-createdAt");
-
-    res.status(200).json({
-      success: true,
-      count: bookings.length,
-      bookings,
-    });
-  } catch (error) {
-    res.status(500).json({
+      success: false,
       message: error.message,
     });
   }
