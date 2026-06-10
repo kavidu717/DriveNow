@@ -4,7 +4,13 @@ import Vehicle from "../models/vehicleModel.js";
 // CREATE BOOKING
 export const createBooking = async (req, res) => {
   try {
-    const { vehicle, startDate } = req.body;
+    const {
+      vehicle,
+      startDate,
+      estimatedKm,
+      paymentId,
+      paymentStatus,
+    } = req.body;
 
     const foundVehicle = await Vehicle.findById(vehicle);
 
@@ -14,7 +20,6 @@ export const createBooking = async (req, res) => {
       });
     }
 
-    const estimatedKm = 50; // fixed
     const totalAmount =
       foundVehicle.pricePerKm * estimatedKm;
 
@@ -25,11 +30,12 @@ export const createBooking = async (req, res) => {
       estimatedKm,
       pricePerKm: foundVehicle.pricePerKm,
       totalAmount,
+      paymentId,
+      paymentStatus,
     });
 
     res.status(201).json({
       success: true,
-      message: "Booking created successfully",
       booking,
     });
   } catch (error) {
