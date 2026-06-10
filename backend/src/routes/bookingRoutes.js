@@ -1,22 +1,8 @@
-import express from "express"
-import { createBooking, getAllBookings, getMyBookings } from "../controller/bookingController.js";
-import {protect} from "../middleware/protect.js" 
-import {adminOnly} from "../middleware/adminOnly.js"
+import express from "express";
+import { createPendingBooking } from "../controller/bookingController.js";
 
+const router = express.Router();
 
-const router=express.Router()
-
-
-router.post("/",protect,createBooking)
-router.get("/",protect,adminOnly,getAllBookings)
-
-router.get("/my",protect,getMyBookings)
-
-
-
-
-
-
-
+router.post("/create-pending", createPendingBooking);
 
 export default router;
