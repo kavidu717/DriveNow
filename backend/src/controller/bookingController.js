@@ -3,6 +3,9 @@ import Booking from "../models/bookingModel.js";
 // CREATE PENDING BOOKING
 export const createPendingBooking = async (req, res) => {
   try {
+
+    console.log("🔥 BOOKING REQUEST RECEIVED");
+    console.log("BODY:", req.body);
     const {
       userId,
       vehicleId,
@@ -28,6 +31,7 @@ export const createPendingBooking = async (req, res) => {
       paymentStatus: "UNPAID"
     });
 
+console.log("✅ BOOKING CREATED:", booking);
     res.status(201).json({
       success: true,
       message: "Booking created successfully",
@@ -35,7 +39,9 @@ export const createPendingBooking = async (req, res) => {
     });
 
   } catch (error) {
+    console.log("❌ BOOKING ERROR FULL:", error);
     res.status(500).json({
+       
       success: false,
       message: error.message
     });

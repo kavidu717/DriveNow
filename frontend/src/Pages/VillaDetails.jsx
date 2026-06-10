@@ -4,56 +4,59 @@ import useVehicleStore from "../Store/vehicleStore.js";
 import { FiCheckCircle, FiXCircle, FiCalendar, FiMap } from "react-icons/fi";
 import toast, { Toaster } from "react-hot-toast";
 import useBookingStore from "../Store/bookingStore.js";
+import useAuthStore from "../Store/authStore.js"; // Auth 
 
-export default function VehicleDetails() {
+export default function VillaDetails() {
   const { id } = useParams();
   const navigate = useNavigate();
 
   const vehicles = useVehicleStore((state) => state.vehicles);
   const fetchVehicles = useVehicleStore((state) => state.fetchVehicles);
-
   const setBooking = useBookingStore((state) => state.setBooking);
+  
+ 
+  const user = useAuthStore((state) => state.user);
+  const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
 
-  // State for booking details
   const [startDate, setStartDate] = useState("");
-  
-  // Fixed distance constant 
-  const estimatedKm = 50;
+  const estimatedKm = 50; // Fixed Distance
 
-  
   useEffect(() => {
     if (!vehicles || vehicles.length === 0) {
       fetchVehicles();
     }
   }, [vehicles, fetchVehicles]);
 
- 
   const vehicle = vehicles?.find((v) => v._id === id);
 
   const handleProceed = () => {
+    if (!isAuthenticated || !user) {
+      toast.error("Please login to continue booking.");
+      navigate("/login");
+      return;
+    }
+
     if (!startDate) {
       toast.error("Please select a pick-up date.");
       return;
     }
 
+   
     const bookingData = {
-    userId: "TEMP_USER_ID",
-    vehicleId: vehicle._id,
-    vehicleName: vehicle.name,
-    vehicleImage: vehicle.image,
-    pricePerKm: vehicle.pricePerKm,
-    startDate,
-    estimatedKm,
-    totalAmount: vehicle.pricePerKm * estimatedKm,
+      userId: user.id || user._id, 
+      vehicleId: vehicle._id,
+      vehicleName: vehicle.name,
+      vehicleImage: vehicle.image,
+      pricePerKm: vehicle.pricePerKm,
+      startDate,
+      estimatedKm,
+      totalAmount: vehicle.pricePerKm * estimatedKm,
+    };
+
+    setBooking(bookingData);
+    navigate("/checkout");
   };
 
-  setBooking(bookingData);
-
-  navigate("/checkout");
-    
-  };
-
-  // වාහනයේ විස්තර ලෝඩ් වෙනකම් Spinner එක පෙන්වනවා
   if (!vehicle) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
@@ -79,11 +82,11 @@ export default function VehicleDetails() {
 
         <div className="bg-white rounded-2xl shadow-xl shadow-gray-200/50 border border-gray-100 overflow-hidden grid md:grid-cols-2 gap-0">
           
-          {/* Left Side: Image, Description & Basic Info */}
+          {/* Left Side: Image & Description */}
           <div className="flex flex-col h-full">
             <div className="h-64 md:h-80 bg-gray-200 relative">
               <img
-                src={vehicle.image || "https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?auto=format&fit=crop&q=80&w=600"}
+                src={vehicle.image }
                 alt={vehicle.name}
                 className="absolute inset-0 w-full h-full object-cover"
               />
@@ -91,9 +94,7 @@ export default function VehicleDetails() {
             
             <div className="p-8 bg-gray-50 flex-grow border-r border-gray-100">
               <div className="flex justify-between items-start mb-2">
-                <h1 className="text-3xl font-black text-gray-900 tracking-tight">
-                  {vehicle.name}
-                </h1>
+                <h1 className="text-3xl font-black text-gray-900 tracking-tight">{vehicle.name}</h1>
                 {vehicle.availability ? (
                   <span className="flex items-center gap-1.5 px-3 py-1 bg-green-100 text-green-700 rounded-full text-sm font-bold shrink-0">
                     <FiCheckCircle /> Available
@@ -105,16 +106,11 @@ export default function VehicleDetails() {
                 )}
               </div>
 
-              <p className="text-gray-500 font-medium mb-4">
-                {vehicle.brand} • {vehicle.type}
-              </p>
+              <p className="text-gray-500 font-medium mb-4">{vehicle.brand} • {vehicle.type}</p>
 
-              {/* Description Section */}
               <div className="mb-6 bg-white p-4 rounded-xl border border-gray-100 shadow-sm">
                 <h4 className="text-sm font-bold text-gray-900 mb-2 uppercase tracking-wider">Description</h4>
-                <p className="text-gray-600 text-sm leading-relaxed">
-                  {vehicle.description || "No specific details have been provided for this listing yet."}
-                </p>
+                <p className="text-gray-600 text-sm leading-relaxed">{vehicle.description || "No specific details provided."}</p>
               </div>
 
               <div className="space-y-4 text-gray-700">
@@ -130,16 +126,14 @@ export default function VehicleDetails() {
             </div>
           </div>
 
-          {/* Right Side: Booking Form */}
+          {/* Right Side: Form */}
           <div className="p-8 flex flex-col justify-between bg-white">
             <div>
               <h3 className="text-xl font-bold text-gray-900 mb-6">Setup your booking</h3>
 
-              {/* Date Picker */}
               <div className="mb-6">
                 <label className="block text-sm font-semibold text-gray-700 mb-2 flex items-center gap-2">
-                  <FiCalendar className="text-orange-500" />
-                  Pick-up Date
+                  <FiCalendar className="text-orange-500" /> Pick-up Date
                 </label>
                 <input
                   type="date"
@@ -149,11 +143,9 @@ export default function VehicleDetails() {
                 />
               </div>
 
-              {/* Distance Input (Fixed to 50KM) */}
               <div className="mb-8">
                 <label className="block text-sm font-semibold text-gray-700 mb-2 flex items-center gap-2">
-                  <FiMap className="text-orange-500" />
-                  Estimated Distance (KM)
+                  <FiMap className="text-orange-500" /> Estimated Distance (KM)
                 </label>
                 <div className="relative">
                   <input
@@ -162,17 +154,11 @@ export default function VehicleDetails() {
                     readOnly
                     className="w-full px-4 py-3 pr-12 rounded-xl border border-gray-200 bg-gray-100 text-gray-500 cursor-not-allowed outline-none shadow-sm"
                   />
-                  <span className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 font-medium">
-                    km
-                  </span>
+                  <span className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 font-medium">km</span>
                 </div>
-                <p className="text-xs text-gray-500 mt-2">
-                  The standard booking distance is fixed at 50 km.
-                </p>
               </div>
             </div>
 
-            {/* Actions Section */}
             <div className="pt-6 border-t border-gray-100">
               <button
                 onClick={handleProceed}
@@ -185,12 +171,9 @@ export default function VehicleDetails() {
               >
                 {vehicle.availability ? "Go to Checkout" : "Vehicle Unavailable"}
               </button>
-              <p className="text-center text-sm text-gray-400 mt-4 font-medium">
-                You won't be charged yet. Total price will be calculated at checkout.
-              </p>
             </div>
-            
           </div>
+
         </div>
       </div>
     </div>

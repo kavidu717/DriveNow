@@ -1,121 +1,61 @@
 import { create } from "zustand";
+import { persist } from "zustand/middleware";
 import API from "../api/axios.js";
 
-let user = null;
-
-try {
-  const storedUser = localStorage.getItem("user");
-
-  if (storedUser && storedUser !== "undefined") {
-    user = JSON.parse(storedUser);
-  }
-} catch (error) {
-  console.log(error)
-  user = null;
-}
-
-const useAuthStore = create((set) => ({
-
-  user,
-  token: localStorage.getItem("token") || null,
-  isAuthenticated: !!localStorage.getItem("token"),
-
-  // register...
-  // verifyOtp...
-  // login...
-  // logout...
-
-   register: async (firstName, lastName, email, password) => {
-    try {
-      const { data } = await API.post(
-        "/auth/register",
-        {
-          firstName,
-          lastName,
-          email,
-          password
-        }
-      );
-
-      return data;
-    } catch (error) {
-      throw (
-        error.response?.data?.message ||
-        "Registration failed"
-      );
-    }
-  },
-
-
-  verifyOtp: async (email, otp) => {
-    try {
-      const { data } = await API.post(
-        "/auth/verify-otp",
-        {
-          email,
-          otp,
-        }
-      );
-
-      return data;
-    } catch (error) {
-      throw (
-        error.response?.data?.message ||
-        "OTP verification failed"
-      );
-    }
-  },
-
-
-  login: async (email, password) => {
-    try {
-      const { data } = await API.post(
-        "/auth/login",
-        {
-          email,
-          password,
-        }
-      );
-
-      const { user, token } = data;
-
-      localStorage.setItem(
-        "user",
-        JSON.stringify(user)
-      );
-      localStorage.setItem("token", token);
-
-      set({
-        user,
-        token,
-        isAuthenticated: true,
-      });
-
-      return data;
-    } catch (error) {
-      throw (
-        error.response?.data?.message ||
-        "Login failed"
-      );
-    }
-  },
-
-  
-  logout: () => {
-    localStorage.removeItem("user");
-    localStorage.removeItem("token");
-
-    set({
+const useAuthStore = create(
+  persist(
+    (set) => ({
       user: null,
       token: null,
       isAuthenticated: false,
-    });
-  },
-}));
 
+      register: async (firstName, lastName, email, password) => {
+        const { data } = await API.post("/auth/register", {
+          firstName,
+          lastName,
+          email,
+          password,
+        });
 
+        return data;
+      },
 
+      verifyOtp: async (email, otp) => {
+        const { data } = await API.post("/auth/verify-otp", {
+          email,
+          otp,
+        });
 
- 
+        return data;
+      },
+
+      login: async (email, password) => {
+        const { data } = await API.post("/auth/login", {
+          email,
+          password,
+        });
+
+        set({
+          user: data.user,
+          token: data.token,
+          isAuthenticated: true,
+        });
+
+        return data;
+      },
+
+      logout: () => {
+        set({
+          user: null,
+          token: null,
+          isAuthenticated: false,
+        });
+      },
+    }),
+    {
+      name: "auth-storage",
+    }
+  )
+);
 
 export default useAuthStore;

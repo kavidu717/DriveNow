@@ -2,41 +2,37 @@ import { create } from "zustand";
 import API from "../api/axios.js";
 
 const useBookingStore = create((set, get) => ({
-  booking: null,
+  booking: null, // Temporary storage for checkout preview
   loading: false,
   error: null,
 
-  // SET BOOKING (from VehicleDetails)
-  setBooking: (data) => set({ booking: data }),
+  // VehicleDetails පිටුවෙන් දත්ත ගබඩා කිරීමට
+  setBooking: (bookingData) => set({ booking: bookingData }),
 
-  clearBooking: () => set({ booking: null }),
-
-  
+  // Backend එකට Booking එක සාර්ථකව යැවීමට
   createBooking: async () => {
+    set({ loading: true, error: null });
     try {
-      set({ loading: true, error: null });
+      const currentBooking = get().booking;
 
-      const booking = get().booking;
+      if (!currentBooking) {
+        throw new Error("No booking details found");
+      }
 
-      const { data } = await API.post("/bookings/create", {
-        userId: booking.userId,
-        vehicleId: booking.vehicleId,
-        startDate: booking.startDate,
-        estimatedKm: booking.estimatedKm,
-        totalAmount: booking.totalAmount,
+      // Backend එක බලාපොරොත්තු වන විදිහටම Request Body එක සකසා යැවීම
+      const response = await API.post("/bookings/create", {
+        userId: currentBooking.userId,       // Real User ID from Auth
+        vehicleId: currentBooking.vehicleId, // Real Vehicle ID
+        startDate: currentBooking.startDate,
+        estimatedKm: currentBooking.estimatedKm,
+        totalAmount: currentBooking.totalAmount,
       });
 
       set({ loading: false });
-
-      return data.booking;
+      return response.data; // Returns { success: true, booking: { ... } }
     } catch (error) {
-      set({
-        loading: false,
-        error:
-          error.response?.data?.message ||
-          "Booking creation failed",
-      });
-
+      const errorMsg = error.response?.data?.message || error.message || "Booking creation failed";
+      set({ error: errorMsg, loading: false });
       return null;
     }
   },
