@@ -11,6 +11,7 @@ import Checkout from './Pages/Checkout'
 import Payment from './Pages/Payment'
 import AdminLayout from './Layout/AdminLayout'
 import AdminDashboard from './Admin/AdminDashBoard'
+import AdminUsers from './Admin/AdminUsers'
 
 
 
@@ -47,7 +48,7 @@ function App() {
 
       <Route path="/admin" element={<AdminLayout />}>
        <Route index element={<AdminDashboard />} />
-
+        <Route path="users" element={<AdminUsers />} />
       </Route>
 
      </Routes>
