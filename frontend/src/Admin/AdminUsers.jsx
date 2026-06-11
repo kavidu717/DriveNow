@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { HiTrash, HiBan} from "react-icons/hi";
 import API from "../api/axios.js";
+import { toast } from "react-hot-toast";
 
 export default function AdminUsers() {
   const [users, setUsers] = useState([]);
@@ -17,6 +18,18 @@ export default function AdminUsers() {
     }
   };
 
+  const deleteUser=async(id)=>{
+    const confirmDelete=window.confirm("are you sure you want to delete this user?")
+    if(!confirmDelete) return
+     try {
+    await API.delete(`/auth/${id}`);
+    setUsers((prev) => prev.filter((user) => user._id !== id));
+    toast.success("User deleted successfully");
+  } catch (error) {
+    console.log(error);
+  }
+
+  }
   useEffect(() => {
     getUsers();
   }, []);
@@ -87,7 +100,8 @@ export default function AdminUsers() {
                     </button>
                     
                     {/* Delete Action Placeholder Button */}
-                    <button 
+                    <button
+                    onClick={()=>{deleteUser(user._id)}} 
                       title="Delete User" 
                       className="p-2 rounded-xl border border-slate-200 bg-white text-slate-400 hover:bg-rose-50 hover:text-rose-600 hover:border-rose-200 transition-colors"
                     >
