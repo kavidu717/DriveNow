@@ -30,6 +30,24 @@ export default function AdminUsers() {
   }
 
   }
+ const toggleBlockUser = async (id) => {
+  try {
+    const { data } = await API.patch(`/auth/block/${id}`);
+
+   
+    setUsers((prev) =>
+      prev.map((user) =>
+        user._id === id ? { ...user, isBlocked: !user.isBlocked } : user
+      )
+    );
+
+    toast.success(data.message);
+  } catch (error) {
+    console.log(error);
+    toast.error("Failed to update user status");
+  }
+};
+
   useEffect(() => {
     getUsers();
   }, []);
@@ -93,8 +111,13 @@ export default function AdminUsers() {
                   <div className="inline-flex items-center gap-2">
                     {/* Block/Unblock Action Placeholder Button */}
                     <button 
-                      title="Toggle Block Status" 
-                      className="p-2 rounded-xl border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 hover:text-rose-600 transition-colors"
+                      title={user.isBlocked ? "Unblock User" : "Block User"}
+                      onClick={() => toggleBlockUser(user._id)}
+                      className={`p-2 rounded-xl border transition-colors
+                      ${user.isBlocked
+                      ? "bg-rose-50 text-rose-600 border-rose-200 hover:bg-rose-100"
+                      : "bg-white text-slate-600 border-slate-200 hover:bg-slate-50 hover:text-rose-600"
+                    }`}
                     >
                       <HiBan size={16} />
                     </button>
