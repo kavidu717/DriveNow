@@ -2,9 +2,11 @@ import express from "express";
 import {
   createPendingBooking,
   getBookingById,
-  updateBookingStatus
+  updateBookingStatus,
+  getAllBookings
 } from "../controller/bookingController.js";
 import { protect } from "../middleware/protect.js";
+import { adminOnly } from "../middleware/adminOnly.js";
 
 console.log("BOOKING ROUTES LOADED");
 
@@ -13,6 +15,8 @@ const router = express.Router();
 // CREATE BOOKING
 router.post("/create",protect, createPendingBooking);
 
+router.get("/",protect, adminOnly, getAllBookings);
+
 // GET SINGLE BOOKING
 router.get("/:id", getBookingById);
 
@@ -20,8 +24,6 @@ router.get("/:id", getBookingById);
 router.put("/:id", updateBookingStatus);
 
 
-router.get("/test", (req, res) => {
-  res.send("Booking Router Working");
-});
+
 
 export default router;
