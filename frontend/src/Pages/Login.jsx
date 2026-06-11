@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate, Link,} from "react-router-dom";
 import useAuthStore from "../Store/authStore.js";
 import toast, { Toaster } from "react-hot-toast";
 import { FiMail, FiLock } from "react-icons/fi"; // Added proper React Icons
@@ -17,12 +17,16 @@ export default function Login() {
     setLoading(true);
 
     try {
-      await login(email, password);
+    const  data=  await login(email, password);
       toast.success("Login successful!");
       
       // Short delay so the user can see the success toast before redirecting
       setTimeout(() => {
-        navigate("/");
+        if(data.user.role==="admin"){
+             navigate("/admin");
+        }else{
+            navigate("/");
+        }
       }, 1000);
     } catch (error) {
       const errorMessage = 

@@ -9,6 +9,8 @@ import Otp from './Pages/Otp'
  import VehicleDetails from "./Pages/VillaDetails";
 import Checkout from './Pages/Checkout'
 import Payment from './Pages/Payment'
+import AdminLayout from './Layout/AdminLayout'
+import AdminDashboard from './Admin/AdminDashBoard'
 
 
 
@@ -40,6 +42,11 @@ function App() {
 
  
 
+
+      </Route>
+
+      <Route path="/admin" element={<AdminLayout />}>
+       <Route index element={<AdminDashboard />} />
 
       </Route>
 
