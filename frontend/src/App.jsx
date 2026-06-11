@@ -13,6 +13,9 @@ import AdminLayout from './Layout/AdminLayout'
 import AdminDashboard from './Admin/AdminDashBoard'
 import AdminUsers from './Admin/AdminUsers'
 
+import AdminVehicle from './Admin/AdminVehicle'
+import AdminVehicleShow from './Admin/AdminVehicleShow'
+
 
 
 
@@ -49,6 +52,9 @@ function App() {
       <Route path="/admin" element={<AdminLayout />}>
        <Route index element={<AdminDashboard />} />
         <Route path="users" element={<AdminUsers />} />
+        <Route path="vehicles" element={<AdminVehicle />} />
+        <Route path="vehicles/all" element={<AdminVehicleShow />} />
+        
       </Route>
 
      </Routes>
