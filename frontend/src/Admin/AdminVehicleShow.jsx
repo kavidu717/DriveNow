@@ -1,10 +1,14 @@
 import { useEffect, useState } from "react";
 import { HiPencilAlt, HiTrash } from "react-icons/hi";
 import API from "../api/axios";
+import { toast } from "react-hot-toast";
+import {useNavigate} from 'react-router-dom';
 
 export default function AdminVehicles() {
   const [vehicles, setVehicles] = useState([]);
   const [loading, setLoading] = useState(true);
+
+  const navigate = useNavigate();
 
   const getVehicles = async () => {
     try {
@@ -21,6 +25,29 @@ export default function AdminVehicles() {
   useEffect(() => {
     getVehicles();
   }, []);
+
+ 
+
+const deleteVehicle = async (id) => {
+  const confirmDelete = window.confirm(
+    "Are you sure you want to delete this vehicle?"
+  );
+
+  if (!confirmDelete) return;
+
+  try {
+    const { data } = await API.delete(`/vehicles/${id}`);
+
+    setVehicles((prev) =>
+      prev.filter((vehicle) => vehicle._id !== id)
+    );
+
+    toast.success(data.message);
+  } catch (error) {
+    console.log(error);
+    toast.error("Failed to delete vehicle");
+  }
+};
 
   if (loading) {
     return (
@@ -108,6 +135,7 @@ export default function AdminVehicles() {
                   <div className="inline-flex items-center gap-2">
                     {/* Update / Edit Action Button */}
                     <button 
+                      onClick={() => navigate(`/admin/vehicle/${vehicle._id}`)}
                       type="button"
                       title="Update Vehicle"
                       className="p-2 rounded-xl border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 hover:text-orange-600 hover:border-orange-200 transition-colors"
@@ -117,6 +145,7 @@ export default function AdminVehicles() {
 
                     {/* Delete Action Button */}
                     <button 
+                      onClick={() => deleteVehicle(vehicle._id)}
                       type="button"
                       title="Delete Vehicle"
                       className="p-2 rounded-xl border border-slate-200 bg-white text-slate-400 hover:bg-rose-50 hover:text-rose-600 hover:border-rose-200 transition-colors"
