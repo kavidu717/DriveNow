@@ -16,6 +16,7 @@ import AdminUsers from './Admin/AdminUsers'
 import AdminVehicle from './Admin/AdminVehicle'
 import AdminVehicleShow from './Admin/AdminVehicleShow'
 import AdminEditVehicle from './Admin/AdminEditVehicle'
+import AdminBookings from './Admin/AdminBookings'
 
 
 
@@ -56,6 +57,7 @@ function App() {
         <Route path="vehicles" element={<AdminVehicle />} />
         <Route path="vehicles/all" element={<AdminVehicleShow />} />
         <Route path="vehicle/:id" element={<AdminEditVehicle />} />
+        <Route path="bookings" element={<AdminBookings />} />
         
       </Route>
 
