@@ -4,7 +4,6 @@ import API from "../api/axios.js";
 import toast from "react-hot-toast";
 
 export default function Payment() {
-  // ඔයාගේ රූට් එකේ තියෙන id එක ඒ විදිහටම ලබා ගනී
   const { id } = useParams();
   const navigate = useNavigate();
 
@@ -40,50 +39,47 @@ export default function Payment() {
             }}
           >
             <PayPalButtons
-              // 💡 layout vertical වූ විට fundingSource නැතිව බටන් 2ම (PayPal & Card) එකවර පෙන්වයි
               style={{ layout: "vertical", shape: "rect", color: "gold" }}
               
               createOrder={async () => {
                 try {
-                  console.log("Sending request to backend for booking ID:", id);
-                  
                   const { data } = await API.post("/payment/create-order", {
                     bookingId: id,
                   });
 
-                  console.log("Backend response data:", data);
-
-                 
                   if (!data || !data.id) {
-                    throw new Error("Backend did not return a valid PayPal Order ID! Check backend console.");
+                    throw new Error("Backend did not return a valid PayPal Order ID!");
                   }
 
                   return data.id; 
                 } catch (err) {
                   console.error("❌ createOrder Failed:", err);
-                  alert("Order Creation Failed: " + (err.response?.data?.message || err.message));
+                  toast.error("Order Creation Failed. Please try again.");
                 }
               }}
               
               onApprove={async (data) => {
                 try {
-                  console.log("Payment approved by user. Capturing ID:", data.orderID);
-                  
+                 
                   await API.post("/payment/capture-order", {
                     orderId: data.orderID,
                     bookingId: id,
                   });
                   
-                  toast.success("payment is success")
+                  toast.success("Payment is successful!");
                   navigate("/"); 
                 } catch (err) {
                   console.error("❌ captureOrder Failed:", err);
-                  alert("Payment captured on PayPal but failed to update on Server.");
+                  
+                  
+                  const errorMessage = err.response?.data?.message || "Payment failed. Please try again.";
+                  toast.error(errorMessage, { duration: 5000 });
                 }
               }}
 
               onError={(err) => {
                 console.error("❌ PayPal Global Error:", err);
+                toast.error("Something went wrong with PayPal.");
               }}
             />
           </PayPalScriptProvider>

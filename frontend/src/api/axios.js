@@ -2,7 +2,7 @@ import axios from "axios";
 import useAuthStore from "../Store/authStore.js";
 
 const API = axios.create({
-  baseURL: "https://drivenow-tbgt.onrender.com/api/v1", 
+  baseURL: "http://localhost:3000/api/v1", 
 });
 
 

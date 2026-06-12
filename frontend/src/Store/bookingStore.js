@@ -6,10 +6,9 @@ const useBookingStore = create((set, get) => ({
   loading: false,
   error: null,
 
-  // VehicleDetails පිටුවෙන් දත්ත ගබඩා කිරීමට
+ 
   setBooking: (bookingData) => set({ booking: bookingData }),
 
-  // Backend එකට Booking එක සාර්ථකව යැවීමට
   createBooking: async () => {
     set({ loading: true, error: null });
     try {
@@ -19,7 +18,7 @@ const useBookingStore = create((set, get) => ({
         throw new Error("No booking details found");
       }
 
-      // Backend එක බලාපොරොත්තු වන විදිහටම Request Body එක සකසා යැවීම
+     
       const response = await API.post("/bookings/create", {
         userId: currentBooking.userId,       // Real User ID from Auth
         vehicleId: currentBooking.vehicleId, // Real Vehicle ID

@@ -15,7 +15,6 @@ export const createPayPalOrder = async (req, res) => {
     }
 
     const request = new checkoutNodeJssdk.orders.OrdersCreateRequest();
-
     request.prefer("return=representation");
 
     request.requestBody({
@@ -40,27 +39,52 @@ export const createPayPalOrder = async (req, res) => {
   }
 };
 
+// CAPTURE ORDER (UPDATED)
 export const capturePayPalOrder = async (req, res) => {
   try {
     const { orderId, bookingId } = req.body;
 
-    const request = new checkoutNodeJssdk.orders.OrdersCaptureRequest(orderId);
+    console.log("ORDER ID:", orderId);
+    console.log("BOOKING ID:", bookingId);
 
+    const request = new checkoutNodeJssdk.orders.OrdersCaptureRequest(orderId);
     request.requestBody({});
 
     const capture = await client().execute(request);
 
-    // ✅ mark booking as PAID
-    await Booking.findByIdAndUpdate(bookingId, {
-      paymentStatus: "PAID",
-      status: "CONFIRMED",
-    });
+    console.log("CAPTURE SUCCESS");
+    
+   
+    const updatedBooking = await Booking.findByIdAndUpdate(
+      bookingId,
+      {
+        paymentStatus: "PAID",
+        status: "CONFIRMED",
+      },
+      { new: true }
+    );
+
+    console.log("UPDATED BOOKING:", updatedBooking);
 
     res.json({
       success: true,
       capture: capture.result,
     });
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    console.error("CAPTURE ERROR DETECTED:", err.statusCode || err.message);
+
+  
+    if (err.statusCode === 422) {
+      return res.status(400).json({
+        success: false,
+        message: "Your payment was declined by PayPal Sandbox. Please use a valid test account or card.",
+      });
+    }
+
+   
+    res.status(500).json({
+      success: false,
+      message: "Internal Server Error during payment capture.",
+    });
   }
 };
