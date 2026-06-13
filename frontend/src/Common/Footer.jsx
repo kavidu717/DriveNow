@@ -31,9 +31,9 @@ export default function Footer() {
                     <div>
                         <h3 className="font-semibold text-lg mb-4 text-gray-900">Contact Us</h3>
                         <ul className="space-y-3 text-gray-500 text-sm">
-                            <li className="flex items-center gap-2"><FaMapMarkerAlt className="text-[#FF8C00]" /> 123 Drive St, Auto City</li>
-                            <li className="flex items-center gap-2"><FaEnvelope className="text-[#FF8C00]" /> support@drivenow.com</li>
-                            <li className="flex items-center gap-2"><FaPhone className="text-[#FF8C00]" /> +1 234 567 890</li>
+                            <li className="flex items-center gap-2"><FaMapMarkerAlt className="text-[#FF8C00]" /> 123 Drive St, Colombo</li>
+                            <li className="flex items-center gap-2"><FaEnvelope className="text-[#FF8C00]" /> driveNow@gmail.com</li>
+                            <li className="flex items-center gap-2"><FaPhone className="text-[#FF8C00]" /> +94 077 300 5419</li>
                         </ul>
                     </div>
                 </div>
