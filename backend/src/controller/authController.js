@@ -91,68 +91,35 @@ import jsonwebtoken from 'jsonwebtoken';
 };
 
 
-export const loginUser=async(req,res)=>{
-    try{
-        const {email,password}=req.body
+export const updateProfile = async (req, res) => {
+  try {
+    
+    const { firstName, lastName, phoneNumber, address } = req.body;
 
-           const user = await User.findOne({ email }).select("+password");
-   
+    const user = await User.findById(req.user.id); 
 
     if (!user) {
-      return res.status(400).
-      json({
-         message: "Invalid credentials" 
-        });
-
-    }
-       if (!user.isVerified) {
-
-      return res.status(400)
-      .json({
-        message: "Please verify your email first"
-      });
-    }
-     
-     if (user.isBlocked) {
-      return res.status(403).json({
-        message: "Your account has been blocked by admin"
-      });
+      return res.status(404).json({ message: "User not found" });
     }
 
-     const match = await bcrypt.compare(password, user.password);
+   
+    user.firstName = firstName || user.firstName;
+    user.lastName = lastName || user.lastName;
+    user.phoneNumber = phoneNumber || user.phoneNumber;
+    user.address = address || user.address;
 
-    if (!match) {
-      return res.status(400)
-      .json({
-         message: "password is incorrect" 
-        });
-    }
-     const token = jsonwebtoken.sign(
-      { id: user._id, role: user.role },
-      process.env.JWT_SECRET,
-      { expiresIn: "1d" }
-    );
+    await user.save();
 
     res.status(200).json({
-      message: "Login successful",
-      token,
-      user:{
-        id:user._id,
-        firstName:user.firstName,
-        lastName:user.lastName,
-        email:user.email,
-        role:user.role
-      }
+      success: true,
+      message: "Profile updated successfully",
+      user
     });
 
-    }catch(error){
-     res.status(500)
-     .json({
-        message:error.message
-     })
-    }
-
-}
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
 
 export const getMyProfile=async(req,res)=>{
     try{
