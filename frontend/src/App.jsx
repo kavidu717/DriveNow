@@ -18,6 +18,7 @@ import AdminVehicleShow from './Admin/AdminVehicleShow'
 import AdminEditVehicle from './Admin/AdminEditVehicle'
 import AdminBookings from './Admin/AdminBookings'
 import About from './Pages/About'
+import Profile from './Pages/Profile'
 
 
 
@@ -36,6 +37,7 @@ function App() {
       <Route path='/register' element={<Register />} />
       <Route path='/verify-otp' element={<Otp />} />
        <Route path='/about' element={<About />} />
+       <Route path='/profile' element={<Profile />} />
 
      
      
