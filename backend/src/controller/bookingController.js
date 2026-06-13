@@ -66,6 +66,26 @@ export const getBookingById = async (req, res) => {
   }
 };
 
+// GET MY BOOKINGS (Logged in user only)
+export const getMyBookings = async (req, res) => {
+  try {
+    // req.user.id කියන්නේ auth middleware එකෙන් එන ID එක
+    const bookings = await Booking.find({ userId: req.user.id }) 
+      .populate("vehicleId", "name image pricePerKm brand") // වාහනේ විස්තර ගන්න
+      .sort("-createdAt"); // අලුත්ම ඒවා උඩින් එන්න
+
+    res.status(200).json({
+      success: true,
+      data: bookings
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message
+    });
+  }
+};
+
 
 // UPDATE BOOKING STATUS (for payment later)
 export const updateBookingStatus = async (req, res) => {

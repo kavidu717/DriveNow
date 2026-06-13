@@ -19,6 +19,8 @@ import AdminEditVehicle from './Admin/AdminEditVehicle'
 import AdminBookings from './Admin/AdminBookings'
 import About from './Pages/About'
 import Profile from './Pages/Profile'
+import Booking from './Pages/Booking'
+import ProtectedRoute from './Components/ProtectedRoute'
 
 
 
@@ -37,7 +39,12 @@ function App() {
       <Route path='/register' element={<Register />} />
       <Route path='/verify-otp' element={<Otp />} />
        <Route path='/about' element={<About />} />
-       <Route path='/profile' element={<Profile />} />
+      
+      <Route element={<ProtectedRoute />}>
+          <Route path="/profile" element={<Profile />} />
+          <Route path="/bookings" element={<Booking />} />
+         
+        </Route>
 
      
      
