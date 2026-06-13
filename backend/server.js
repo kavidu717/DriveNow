@@ -12,7 +12,14 @@ dotenv.config();
 
 const app = express();
 
-app.use(cors());
+import cors from "cors";
+
+app.use(
+  cors({
+    origin: process.env.FRONTEND_URL,
+    credentials: true,
+  })
+);
 
 connectDB();
 const PORT=process.env.PORT||3000
