@@ -17,6 +17,7 @@ import AdminVehicle from './Admin/AdminVehicle'
 import AdminVehicleShow from './Admin/AdminVehicleShow'
 import AdminEditVehicle from './Admin/AdminEditVehicle'
 import AdminBookings from './Admin/AdminBookings'
+import About from './Pages/About'
 
 
 
@@ -34,6 +35,8 @@ function App() {
       <Route path='/login' element={<Login />} />
       <Route path='/register' element={<Register />} />
       <Route path='/verify-otp' element={<Otp />} />
+       <Route path='/about' element={<About />} />
+
      
      
 
@@ -54,6 +57,7 @@ function App() {
       <Route path="/admin" element={<AdminLayout />}>
        <Route index element={<AdminDashboard />} />
         <Route path="users" element={<AdminUsers />} />
+
         <Route path="vehicles" element={<AdminVehicle />} />
         <Route path="vehicles/all" element={<AdminVehicleShow />} />
         <Route path="vehicle/:id" element={<AdminEditVehicle />} />
