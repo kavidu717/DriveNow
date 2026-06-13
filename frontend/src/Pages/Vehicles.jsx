@@ -27,19 +27,19 @@ export default function Vehicles() {
 
   return (
    
-    <div className="min-h-screen w-full flex flex-col bg-gray-50 relative pt-24">
+    <div className="min-h-screen w-full flex flex-col bg-gray-50 relative ">
       
-      {/* 🖼️ Hero Banner Section (Full Width & Larger) */}
+     
       <div className="w-full mb-8">
         
-        <div className="relative w-full h-80 sm:h-80 md:h-[400px] overflow-hidden shadow-md">
-          {/* Background Image */}
+        <div className="relative w-full h-[75vh] sm:h-80 md:h-[400px] overflow-hidden shadow-md">
+        
           <img
             src="https://res.cloudinary.com/doujmzgn3/image/upload/v1780847544/tyler-clemmensen-d1Jum1vVLew-unsplash_bkqez1.jpg"
             alt="Premium Fleet Banner"
             className="absolute inset-0 w-full h-full object-cover object-center"
           />
-          {/* 💙 Dark Blue Overlay Layer */}
+        
           <div className="absolute inset-0 bg-gradient-to-r from-slate-900/95 via-slate-900/80 to-blue-950/40 mix-blend-multiply"></div>
           <div className="absolute inset-0 bg-blue-900/20 mix-blend-color-burn"></div>
 
@@ -102,9 +102,9 @@ export default function Vehicles() {
             <FilterBar />
           </div>
         </div>
-        {/* ------------------------------------- */}
+       
 
-        {/* Right Content Area: Vehicle Grid */}
+       
         <main className="flex-1 p-4 sm:p-6 md:p-8">
           
           {/* Section Header */}

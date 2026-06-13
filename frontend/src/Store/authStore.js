@@ -44,6 +44,18 @@ const useAuthStore = create(
         return data;
       },
 
+      fetchProfile: async () => {
+        try {
+         
+          const { data } = await API.get("/auth/profile"); 
+          
+          set({ user: data.user });
+          return data;
+        } catch (error) {
+          console.error("Profile fetch error:", error);
+        }
+      },
+
       logout: () => {
         set({
           user: null,
