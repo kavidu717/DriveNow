@@ -1,12 +1,22 @@
-import { useEffect, useState } from "react";
+import  { useEffect, useState } from "react";
 import useAuthStore from "../Store/authStore";
 import { FaUserAlt, FaEnvelope, FaIdCard, FaPhoneAlt, FaMapMarkerAlt, FaShieldAlt } from "react-icons/fa";
-import { FiCheckCircle, FiEdit3, FiCamera, FiSettings, FiClock, FiCreditCard } from "react-icons/fi";
+import { FiCheckCircle, FiEdit3, FiCamera, FiSettings, FiClock, FiCreditCard, FiX } from "react-icons/fi";
 import { Link } from "react-router-dom";
 
 export default function Profile() {
-  const { user, fetchProfile } = useAuthStore();
+  const { user, fetchProfile, updateProfile } = useAuthStore();
   const [loading, setLoading] = useState(true);
+  
+  // Modal State & Form Data
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+  const [formData, setFormData] = useState({
+    firstName: "",
+    lastName: "",
+    phoneNumber: "",
+    address: "",
+  });
 
   // Fetch latest profile data
   useEffect(() => {
@@ -16,6 +26,35 @@ export default function Profile() {
     };
     loadData();
   }, [fetchProfile]);
+
+  // Open modal and pre-fill data
+  const handleOpenEditModal = () => {
+    setFormData({
+      firstName: user?.firstName || "",
+      lastName: user?.lastName || "",
+      phoneNumber: user?.phoneNumber || "",
+      address: user?.address || "",
+    });
+    setIsEditModalOpen(true);
+  };
+
+  const handleInputChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  // Submit profile update
+  const handleUpdateSubmit = async (e) => {
+    e.preventDefault();
+    setIsSaving(true);
+    try {
+      await updateProfile(formData);
+      setIsEditModalOpen(false); // Close modal on success
+    } catch (error) {
+      alert("Failed to update profile. Please try again.");
+    } finally {
+      setIsSaving(false);
+    }
+  };
 
   if (loading) {
     return (
@@ -29,25 +68,21 @@ export default function Profile() {
   }
 
   return (
-    <div className="min-h-screen bg-[#F8F9FA] pt-28 pb-20 font-sans">
+    <div className="min-h-screen bg-[#F8F9FA] pt-28 pb-20 font-sans relative">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           
-          {/* 📱 Left Column: Main Profile Card */}
+          {/* 📱 Left Column: Main Profile & Verification */}
           <div className="lg:col-span-1 space-y-6">
             
             {/* User Identity Card */}
             <div className="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden relative">
-              {/* Cover Banner */}
               <div className="h-32 bg-gradient-to-r from-slate-900 to-slate-800 relative">
-                {/* Decorative pattern */}
                 <div className="absolute inset-0 opacity-10 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-white via-transparent to-transparent bg-[length:20px_20px]"></div>
               </div>
 
-              {/* Profile Content */}
               <div className="px-6 pb-8 relative">
-                {/* Avatar */}
                 <div className="relative w-max -mt-16 mb-4">
                   <div className="h-28 w-28 rounded-full border-4 border-white bg-white shadow-xl overflow-hidden flex items-center justify-center relative group">
                     {user?.profileImage ? (
@@ -57,19 +92,15 @@ export default function Profile() {
                         {user?.firstName?.[0]}{user?.lastName?.[0]}
                       </div>
                     )}
-                    {/* Hover Camera Icon */}
                     <button className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity backdrop-blur-sm">
                       <FiCamera className="text-white text-2xl" />
                     </button>
                   </div>
-                  
-                  {/* Verified Badge */}
                   <div className="absolute bottom-1 right-1 bg-white rounded-full p-0.5 shadow-sm">
                     <FiCheckCircle className="text-blue-500 text-xl fill-blue-50" />
                   </div>
                 </div>
 
-                {/* Name & Role */}
                 <div>
                   <h1 className="text-2xl font-black text-gray-900 tracking-tight">
                     {user?.firstName} {user?.lastName}
@@ -79,8 +110,10 @@ export default function Profile() {
                   </p>
                 </div>
 
-                {/* Quick Action Button */}
-                <button className="w-full mt-6 bg-gray-50 hover:bg-gray-100 border border-gray-200 text-gray-800 font-bold py-2.5 rounded-xl transition-colors flex items-center justify-center gap-2 text-sm shadow-sm">
+                <button 
+                  onClick={handleOpenEditModal}
+                  className="w-full mt-6 bg-gray-50 hover:bg-gray-100 border border-gray-200 text-gray-800 font-bold py-2.5 rounded-xl transition-colors flex items-center justify-center gap-2 text-sm shadow-sm"
+                >
                   <FiEdit3 className="text-gray-500" /> Edit Profile
                 </button>
               </div>
@@ -98,7 +131,11 @@ export default function Profile() {
                 </div>
                 <div className="flex items-center justify-between">
                   <span className="text-sm text-gray-600">Phone Number</span>
-                  <span className="text-xs font-bold bg-amber-50 text-amber-700 px-2.5 py-1 rounded-full border border-amber-100">Pending</span>
+                  {user?.phoneNumber ? (
+                    <span className="text-xs font-bold bg-green-50 text-green-700 px-2.5 py-1 rounded-full border border-green-100">Verified</span>
+                  ) : (
+                    <span className="text-xs font-bold bg-amber-50 text-amber-700 px-2.5 py-1 rounded-full border border-amber-100">Pending</span>
+                  )}
                 </div>
                 <div className="flex items-center justify-between">
                   <span className="text-sm text-gray-600">Identity Card</span>
@@ -148,7 +185,6 @@ export default function Profile() {
               
               <div className="p-6 md:p-8 grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
                 
-                {/* Info Item */}
                 <div className="group">
                   <div className="flex items-center gap-2 text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">
                     <FaUserAlt /> First Name
@@ -158,7 +194,6 @@ export default function Profile() {
                   </p>
                 </div>
 
-                {/* Info Item */}
                 <div className="group">
                   <div className="flex items-center gap-2 text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">
                     <FaIdCard /> Last Name
@@ -168,25 +203,27 @@ export default function Profile() {
                   </p>
                 </div>
 
-                {/* Info Item */}
                 <div className="group">
                   <div className="flex items-center gap-2 text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">
                     <FaPhoneAlt /> Phone Number
                   </div>
-                  <p className="text-base font-semibold text-gray-800 bg-gray-50/50 p-3 rounded-xl border border-transparent group-hover:border-gray-100 transition-colors">
-                    {user?.phoneNumber || "+94 7X XXX XXXX"}
-                    <span className="ml-2 text-xs text-[#FF8C00] font-medium cursor-pointer hover:underline">Add Number</span>
+                  <p className="text-base font-semibold text-gray-800 bg-gray-50/50 p-3 rounded-xl border border-transparent group-hover:border-gray-100 transition-colors flex items-center justify-between">
+                    {user?.phoneNumber || "Not provided"}
+                    {!user?.phoneNumber && (
+                      <span onClick={handleOpenEditModal} className="text-xs text-[#FF8C00] font-medium cursor-pointer hover:underline">Add</span>
+                    )}
                   </p>
                 </div>
 
-                {/* Info Item */}
                 <div className="group">
                   <div className="flex items-center gap-2 text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">
                     <FaMapMarkerAlt /> Address
                   </div>
-                  <p className="text-base font-semibold text-gray-800 bg-gray-50/50 p-3 rounded-xl border border-transparent group-hover:border-gray-100 transition-colors">
-                    {user?.address || "No address saved"}
-                    <span className="ml-2 text-xs text-[#FF8C00] font-medium cursor-pointer hover:underline">Add</span>
+                  <p className="text-base font-semibold text-gray-800 bg-gray-50/50 p-3 rounded-xl border border-transparent group-hover:border-gray-100 transition-colors flex items-center justify-between">
+                    {user?.address || "Not provided"}
+                    {!user?.address && (
+                      <span onClick={handleOpenEditModal} className="text-xs text-[#FF8C00] font-medium cursor-pointer hover:underline">Add</span>
+                    )}
                   </p>
                 </div>
 
@@ -229,6 +266,98 @@ export default function Profile() {
           </div>
         </div>
       </div>
+
+      {/* 💡 EDIT PROFILE MODAL */}
+      {isEditModalOpen && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+          <div 
+            className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm"
+            onClick={() => setIsEditModalOpen(false)}
+          ></div>
+          
+          <div className="relative w-full max-w-lg bg-white rounded-3xl shadow-2xl p-6 md:p-8 animate-in fade-in zoom-in duration-200">
+            
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-2xl font-black text-gray-900">Edit Profile</h2>
+              <button 
+                onClick={() => setIsEditModalOpen(false)}
+                className="p-2 bg-gray-50 hover:bg-gray-100 rounded-full text-gray-500 transition-colors"
+              >
+                <FiX size={20} />
+              </button>
+            </div>
+
+            <form onSubmit={handleUpdateSubmit} className="space-y-5">
+              
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">First Name</label>
+                  <input 
+                    type="text" 
+                    name="firstName"
+                    value={formData.firstName}
+                    onChange={handleInputChange}
+                    className="w-full bg-gray-50 border border-gray-200 text-gray-900 text-sm rounded-xl focus:ring-[#FF8C00] focus:border-[#FF8C00] block p-3 outline-none transition-colors"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Last Name</label>
+                  <input 
+                    type="text" 
+                    name="lastName"
+                    value={formData.lastName}
+                    onChange={handleInputChange}
+                    className="w-full bg-gray-50 border border-gray-200 text-gray-900 text-sm rounded-xl focus:ring-[#FF8C00] focus:border-[#FF8C00] block p-3 outline-none transition-colors"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Phone Number</label>
+                <input 
+                  type="text" 
+                  name="phoneNumber"
+                  value={formData.phoneNumber}
+                  onChange={handleInputChange}
+                  className="w-full bg-gray-50 border border-gray-200 text-gray-900 text-sm rounded-xl focus:ring-[#FF8C00] focus:border-[#FF8C00] block p-3 outline-none transition-colors"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Address</label>
+                <textarea 
+                  name="address"
+                  rows="3"
+                  value={formData.address}
+                  onChange={handleInputChange}
+                  className="w-full bg-gray-50 border border-gray-200 text-gray-900 text-sm rounded-xl focus:ring-[#FF8C00] focus:border-[#FF8C00] block p-3 outline-none transition-colors resize-none"
+                ></textarea>
+              </div>
+
+              <div className="pt-4 flex gap-3">
+                <button 
+                  type="button"
+                  onClick={() => setIsEditModalOpen(false)}
+                  className="flex-1 bg-white border border-gray-200 text-gray-700 font-bold py-3 rounded-xl hover:bg-gray-50 transition-colors"
+                >
+                  Cancel
+                </button>
+                <button 
+                  type="submit"
+                  disabled={isSaving}
+                  className="flex-1 bg-[#FF8C00] hover:bg-orange-600 text-white font-bold py-3 rounded-xl shadow-md transition-colors disabled:opacity-70 flex justify-center items-center gap-2"
+                >
+                  {isSaving ? (
+                    <div className="h-5 w-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                  ) : "Save Changes"}
+                </button>
+              </div>
+            </form>
+
+          </div>
+        </div>
+      )}
+
     </div>
   );
 }

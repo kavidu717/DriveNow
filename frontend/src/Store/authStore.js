@@ -55,6 +55,18 @@ const useAuthStore = create(
           console.error("Profile fetch error:", error);
         }
       },
+      updateProfile: async (profileData) => {
+  try {
+   
+    const { data } = await API.put("/auth/profile", profileData);
+   
+    set({ user: data.user }); 
+    return data;
+  } catch (error) {
+    console.error("Profile update error:", error);
+    
+  }
+},
 
       logout: () => {
         set({

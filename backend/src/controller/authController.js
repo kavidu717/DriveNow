@@ -91,35 +91,68 @@ import jsonwebtoken from 'jsonwebtoken';
 };
 
 
-export const updateProfile = async (req, res) => {
-  try {
-    
-    const { firstName, lastName, phoneNumber, address } = req.body;
+export const loginUser=async(req,res)=>{
+    try{
+        const {email,password}=req.body
 
-    const user = await User.findById(req.user.id); 
+           const user = await User.findOne({ email }).select("+password");
+   
 
     if (!user) {
-      return res.status(404).json({ message: "User not found" });
+      return res.status(400).
+      json({
+         message: "Invalid credentials" 
+        });
+
+    }
+       if (!user.isVerified) {
+
+      return res.status(400)
+      .json({
+        message: "Please verify your email first"
+      });
+    }
+     
+     if (user.isBlocked) {
+      return res.status(403).json({
+        message: "Your account has been blocked by admin"
+      });
     }
 
-   
-    user.firstName = firstName || user.firstName;
-    user.lastName = lastName || user.lastName;
-    user.phoneNumber = phoneNumber || user.phoneNumber;
-    user.address = address || user.address;
+     const match = await bcrypt.compare(password, user.password);
 
-    await user.save();
+    if (!match) {
+      return res.status(400)
+      .json({
+         message: "password is incorrect" 
+        });
+    }
+     const token = jsonwebtoken.sign(
+      { id: user._id, role: user.role },
+      process.env.JWT_SECRET,
+      { expiresIn: "1d" }
+    );
 
     res.status(200).json({
-      success: true,
-      message: "Profile updated successfully",
-      user
+      message: "Login successful",
+      token,
+      user:{
+        id:user._id,
+        firstName:user.firstName,
+        lastName:user.lastName,
+        email:user.email,
+        role:user.role
+      }
     });
 
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-};
+    }catch(error){
+     res.status(500)
+     .json({
+        message:error.message
+     })
+    }
+
+}
 
 export const getMyProfile=async(req,res)=>{
     try{
@@ -138,22 +171,22 @@ export const getMyProfile=async(req,res)=>{
         })
     }
 }
-
 export const updateProfile = async (req, res) => {
   try {
+    
+    const { firstName, lastName, phoneNumber, address } = req.body;
 
-    const { FirstName, LastName } = req.body;
-
-    const user = await User.findById(req.user._id);
+    const user = await User.findById(req.user.id);
 
     if (!user) {
-      return res.status(404).json({
-        message: "User not found"
-      });
+      return res.status(404).json({ message: "User not found" });
     }
 
+  
     user.firstName = firstName || user.firstName;
     user.lastName = lastName || user.lastName;
+    user.phoneNumber = phoneNumber || user.phoneNumber;
+    user.address = address || user.address;
 
     await user.save();
 
@@ -164,11 +197,11 @@ export const updateProfile = async (req, res) => {
     });
 
   } catch (error) {
-    res.status(500).json({
-      message: error.message
-    });
+    res.status(500).json({ message: error.message });
   }
 };
+
+
 
 export const getAllUsers=async(req,res)=>{
     try{
